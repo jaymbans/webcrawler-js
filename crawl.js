@@ -1,6 +1,13 @@
 const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 
+/**
+ * 
+ * @param {*} baseURL 
+ * @param {*} currentURL 
+ * @param {*} pages 
+ * @returns An object with webhosts as keys and frequency of the mnumber of links on a page as values
+ */
 const crawlPage = async (baseURL, currentURL = baseURL, pages = {}) => {
   const normalizedCurrentURL = normalizeURL(currentURL)
 
@@ -15,6 +22,7 @@ const crawlPage = async (baseURL, currentURL = baseURL, pages = {}) => {
 
   console.log(`Crawling [${currentURL}]...`)
   try {
+    //fetch response and validate
     const response = await fetch(currentURL)
 
     if (response.status === 400) {
@@ -35,9 +43,9 @@ const crawlPage = async (baseURL, currentURL = baseURL, pages = {}) => {
       return pages
     }
 
+    //Convert HTML and recursively crawl other links
     const html = await response.text()
     const urls = getURLsFromHTML(html, currentURL)
-    // console.log(urls)
 
     for (let url of urls) {
       pages = await crawlPage(baseURL, url, pages)
